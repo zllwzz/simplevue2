@@ -1,38 +1,32 @@
-import Vue from 'vue' //默认先查找source目录下的vue文件夹
+import {h,render} from './vdom'
 
-let vm = new Vue({
-    el: '#app',
-    data() {
-        return {
-            msg: 'hello',
-            // school: {
-            //     name: 'zf',
-            //     age: 10
-            // },
-            arr: [[1,2], 2, 3],
-            firstName: 'zhu',
-            lastName: 'feng'
-        }
+
+// 节约性能  先把真实节点 用一个对象表示出来  再通过对象渲染到页面上
+// 前端操作dom的时候 排序 删除
+
+// diff 新的节点  再生成一个对象
+
+// vue代码基本不用手动操作dom
+
+// 虚拟dom  只是一个对象
+// new Vue({
+//     render(h) {
+//         return h('div',{},'hello')
+//     },
+// })
+
+// <div id="container"><span style="color:red">hello</span>zf</div>
+
+let oldvnode = h('div', {
+        id: 'container'
     },
-    computed: {
-        // fullName() {
-        //     return this.firstName + this.lastName
-        // }
-    },
-    watch: {
-        // msg(newValue,value) {
-        //     console.log(newValue,value)
-        // }
-        msg:{
-            handler(newValue,value) {
-                console.log(newValue,value)
-            },
-            // immediate: true
+    h('span', {
+        style: {
+            color: 'red'
         }
-    }
-})
+    }, 'hello'),
+    'zf'
+)
+let container = document.getElementById('app');
 
-
-setTimeout(() => {
-    // vm.msg = 0
-},1000)
+render(oldvnode,container)
