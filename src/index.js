@@ -1,4 +1,8 @@
-import {h,render} from './vdom'
+import {
+    h,
+    render,
+    patch
+} from './vdom'
 
 
 // 节约性能  先把真实节点 用一个对象表示出来  再通过对象渲染到页面上
@@ -17,16 +21,23 @@ import {h,render} from './vdom'
 
 // <div id="container"><span style="color:red">hello</span>zf</div>
 
-let oldvnode = h('div', {
-        id: 'container'
-    },
-    h('span', {
-        style: {
-            color: 'red'
-        }
-    }, 'hello'),
-    'zf'
+let oldvnode = h('div', {id: 'container'},
+    h('li', {key: 'a',style: {background:'red'}}, 'a'),
+    h('li', {key: 'b',style: {background:'yellow'}}, 'b'),
+    h('li', {key: 'c',style: {background:'blue'}}, 'c'),
+    h('li', {key: 'd',style: {background:'pink'}}, 'd'),
+)
+
+let newVnode = h('div', {id: 'aa'},
+    h('li', {key: 'd',style: {background:'pink'}}, 'd'),
+    h('li', {key: 'a',style: {background:'red'}}, 'a'),
+    h('li', {key: 'b',style: {background:'yellow'}}, 'b'),
+    h('li', {key: 'c',style: {background:'blue'}}, 'c'),
 )
 let container = document.getElementById('app');
 
-render(oldvnode,container)
+render(oldvnode, container)
+
+setTimeout(() => {
+    patch(oldvnode,newVnode)
+}, 1000);
