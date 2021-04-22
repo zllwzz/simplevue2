@@ -7,6 +7,7 @@
 export function render(vnode, container) {
     let el = createElm(vnode)
     container.appendChild(el)
+    return el;
 }
 
 function createElm(vnode) {
@@ -97,6 +98,7 @@ export function patch(oldVnode, newVnode) {
             el.appendChild(child)
         }
     }
+    return el;
 }
 
 // 两个节点标签名和key一样 认为是同一个节点

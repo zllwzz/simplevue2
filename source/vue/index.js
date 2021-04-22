@@ -5,7 +5,7 @@ import Watcher from './observe/watch';
 import {
     compiler
 } from './util'
-
+import {render, patch, h} from './vdom'
 function Vue(options) {
     this._init(options) //初始化vue
 }
@@ -29,17 +29,32 @@ function query(el) {
     return el;
 }
 
-Vue.prototype._update = function () {
+Vue.prototype._update = function (vnode) {
     // 用户传入的数据 去更新视图
     let vm = this;
     let el = vm.$el;
-    let node = document.createDocumentFragment();
-    let firstChild;
-    while (firstChild = el.firstChild) {
-        node.appendChild(firstChild)
+
+    let preVnode = vm.preVnode;
+    if (!preVnode) {
+        vm.preVnode = vnode;
+        vm.$el = render(vnode, el);
+    } else {
+        vm.preVnode = vnode;
+        vm.$el = patch(preVnode,vnode);
     }
-    compiler(node, vm)
-    el.appendChild(node)
+    // let node = document.createDocumentFragment();
+    // let firstChild;
+    // while (firstChild = el.firstChild) {
+    //     node.appendChild(firstChild)
+    // }
+    // compiler(node, vm)
+    // el.appendChild(node)
+}
+
+Vue.prototype._render = function() {
+    let vm = this;
+    let render = vm.$options.render;
+    return render.call(vm, h)
 }
 
 Vue.prototype.$mount = function () {
@@ -49,7 +64,7 @@ Vue.prototype.$mount = function () {
 
     // 渲染是通过 watch来渲染的
     let updateComponent = () => {
-        vm._update()
+        vm._update(vm._render())
     }
     new Watcher(vm, updateComponent)
 }
