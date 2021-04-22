@@ -115,7 +115,23 @@ function updateChildren(parent, oldChildren, newChildren) {
     let newEndIndex = newChildren.length - 1;
     let newEndVnode = newChildren[newEndIndex];
 
+    function makeIndexByKey(children) {
+        let map = {};
+        children.forEach((item, index) => {
+            map[item.key] = index;
+        })
+        return map;
+    }
+
+    let map = makeIndexByKey(oldChildren);
+
+
     while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
+        if (!oldStartVnode) {
+            oldStartVnode = oldChildren[++oldStartIndex];
+        } else if (!oldEndVnode) {
+            oldEndVnode = oldChildren[--oldEndIndex];
+        }
         if (isSameVnode(oldStartVnode, newStartVnode)) {
             console.log(oldStartVnode.key)
             patch(oldStartVnode, newStartVnode);
@@ -137,6 +153,20 @@ function updateChildren(parent, oldChildren, newChildren) {
             newStartVnode = newChildren[++newStartIndex];
         } else {
             // 两个列表乱序 不复用
+            // 新节点的第一项 去老节点中匹配
+            // 如果匹配不到直接将新节点插入到老节点开头前面
+            // 如果匹配到，直接移动老节点
+            // 可能老节点中还有剩余，直接删除
+            let moveIndex = map[newStartVnode.key];
+            if (moveIndex == undefined) {
+                parent.insertBefore(createElm(newStartVnode), oldStartVnode.el);
+            } else {
+                const moveVnode = oldChildren[moveIndex];
+                patch(moveVnode, newStartVnode)
+                oldChildren[moveIndex] = undefined;
+                parent.insertBefore(moveVnode.el, oldStartVnode.el);
+            }
+            newStartVnode = newChildren[++newStartIndex];
         }
     }
 
@@ -147,6 +177,14 @@ function updateChildren(parent, oldChildren, newChildren) {
             parent.insertBefore(createElm(newChildren[i]), ele)
             // insertBefore(插入的元素,null) => appendChild
             // parent.appendChild(createElm(newChildren[i]));
+        }
+    }
+    if (oldStartIndex <= oldEndIndex) {
+        for(let i = oldStartIndex;i<=oldEndIndex;i++) {
+            let child = oldChildren[i];
+            if (child != undefined) {
+                parent.removeChild(child.el)
+            }
         }
     }
 }

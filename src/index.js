@@ -29,10 +29,11 @@ let oldvnode = h('div', {id: 'container'},
 )
 
 let newVnode = h('div', {id: 'aa'},
-    h('li', {key: 'd',style: {background:'pink'}}, 'd'),
+    h('li', {key: 'e',style: {background:'pink'}}, 'e'),
     h('li', {key: 'a',style: {background:'red'}}, 'a'),
-    h('li', {key: 'b',style: {background:'yellow'}}, 'b'),
+    h('li', {key: 'f',style: {background:'yellow'}}, 'f'),
     h('li', {key: 'c',style: {background:'blue'}}, 'c'),
+    h('li', {key: 'n',style: {background:'blue'}}, 'n'),
 )
 let container = document.getElementById('app');
 
